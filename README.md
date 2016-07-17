@@ -25,7 +25,8 @@ zepto-serve my-server
 ```
 
 For a more or less complex example leveraging a few more
-possibilities, see the [example JSON server](https://github.com/hellerve/lang-server/blob/master/examples/serve-json/serve-json.zp).
+possibilities, see the [example JSON server](https://github.com/hellerve/lang-server/blob/master/examples/serve-json/serve-json.zp)
+or the [badge generator](https://github.com/hellerve/lang-server/blob/master/examples/badges/badges.zp).
 
 <hr/>
 Have fun!

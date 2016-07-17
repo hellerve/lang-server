@@ -1,0 +1,47 @@
+#lang serve
+; A simple server that generates Github badges.
+; after starting it, you can access the following routes:
+; /<service-name>/<status-name>
+; /<service-name>/<status-name>/<color-hex>
+; /<service-name>/<status-name>/<color-hex>/<width-pixels>
+; /<service-name>/<status-name>/<color-hex>/<width-pixels>/<height-pixels>
+; It has a lot of DOS flaws and will die if the appropriate format is not given.
+; Also, it should probably use mustache but I did not want to introduce
+; additional dependencies to the package.
+
+(define template-string
+  (read-contents (zepto:find-on-path "zepto-serve/examples/badges/template.svg")))
+
+(defkeywords (template service status) (:color :default "090"
+                                        :width :default "100"
+                                        :height :default "30")
+    (let ((apply-arg (lambda (arg-name arg)
+                      (lambda (str) (string:substitute str (++ arg-name "-sub") arg)))))
+      (|> template-string
+          (apply-arg "service" service)
+          (apply-arg "status" status)
+          (apply-arg "color" color)
+          (apply-arg "half-width" (->string (/ (string->number width) 2)))
+          (apply-arg "three-quarter-width" (->string (* 3 (/ (string->number width) 4))))
+          (apply-arg "quarter-width" (->string (/ (string->number width) 4)))
+          (apply-arg "width" width)
+          (apply-arg "height" height))))
+
+(define make-badge
+  (case-lambda
+    (() (template))
+    ((service status) (template service status))
+    ((service status color) (template service status :color color))
+    ((service status color size)
+      (template service status :color color :width size :height size))
+    ((service status color width height)
+      (template service status :color color :width width :height height))))
+
+(define (handle method route headers req)
+  (cond
+    ((not (eq? method "GET")) (response :code 405))
+    (else
+      (let ((split (string:split route "/")))
+        (if (and (< 1 (length split)) (> 6 (length split)))
+          (response :body (apply make-badge split) :content-type "image/svg+xml")
+          (response :code 404))))))

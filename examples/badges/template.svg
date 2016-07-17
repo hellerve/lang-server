@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="{{=it.widths[0]+it.widths[1]}}" height="20">
+  <g shape-rendering="crispEdges">
+    <rect width="half-width-sub" height="height-sub" fill="#555"/>
+    <rect x="half-width-sub" width="half-width-sub" height="height-sub" fill="#color-sub"/>
+  </g>
+  <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">
+    <text x="quarter-width-sub" y="14">service-sub</text>
+    <text x="three-quarter-width-sub" y="14">status-sub</text>
+  </g>
+</svg>

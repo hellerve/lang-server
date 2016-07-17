@@ -1,4 +1,4 @@
-(load "lang-server/lang")
+(load "zepto-serve/lang")
 
 (if (eq? (length zepto:args) 1)
   (load (car zepto:args))
