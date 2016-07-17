@@ -1,0 +1,52 @@
+(load "html/html")
+(load "json/json")
+
+(import-all "html")
+
+(define return-codes #{200 "OK"
+                       400 "Bad Request"
+                       401 "Unauthorized"
+                       403 "Permission Denied"
+                       404 "Not Found"
+                       405 "Method Not Allowed"})
+
+(defkeywords (response) (:body         :default ""
+                        :code         :default 200
+                        :content-type :default "text/html")
+  (make-hash :body body :code code :content-type content-type))
+
+(define (wrap code content-type data)
+ (++ "HTTP/1.1 " (->string code) (return-codes code)
+     "\r\nContent-Length: " (->string (length data))
+     "\r\nContent-Type: " content-type  "\r\nConnection: close\r\n\r\n"
+     data "\r\n\r\n"))
+
+(define (parse-headers headers)
+  (reduce (lambda (acc elem)
+            (let ((split (string:split elem ":")))
+              (hash:set acc (string:trim (car split)) (string:trim (cadr split)))))
+          #{}
+          (string:split headers "\r\n")))
+
+(define (serve)
+   (begin
+     (net:listen sock)
+     (let* ((conn-data  (net:accept sock))
+            (conn       (car conn-data))
+            (req        (net:recv conn (make-small 1000)))
+            (head+body  (string:split (byte-vector->string req) "\r\n\r\n"))
+            (lines      (string:split (byte-vector->string req) "\r\n"))
+            (first-line (car lines))
+            (headers    (parse-headers (string:substitute (car head+body) first-line "")))
+            (req        (string:join (cdr head+body) "\r\n"))
+            (split      (string:split first-line #\space))
+            (method     (car split))
+            (route      (cadr split))
+            (handled    (handle method route headers req)))
+       (net:send conn (string->byte-vector (wrap (get-from handled :code 200)
+                                                 (get-from handled :content-type "text/html")
+                                                 (get-from handled :body "")))))))
+
+(define HOST "0.0.0.0")
+(define PORT 5000)
+(define sock (net:socket "stream"))

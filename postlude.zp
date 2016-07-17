@@ -1,0 +1,2 @@
+(net:bind-socket sock (net:get-addr-info HOST (->string PORT)))
+(forever (serve))

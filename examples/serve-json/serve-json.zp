@@ -1,0 +1,25 @@
+#lang serve
+(load "json/json")
+
+(define resource #{})
+
+(define (handle method route headers body)
+  (let ((return-resource (lambda () (response :body (json:dump resource)
+                                              :content-type "application/json"))))
+    (if (not (eq? route "/"))
+      (response :code 404)
+      (case method
+        (("GET") (return-resource))
+        (("POST" "PATCH")
+          (begin
+            (set! resource (json:apply-patch resource (json:parse body)))
+            (return-resource)))
+        (("PUT")
+          (begin
+            (set! resource (json:parse body))
+            (return-resource)))
+        (("DELETE")
+          (begin
+            (set! resource "null")
+            (response)))
+        (else (response :code 405))))))

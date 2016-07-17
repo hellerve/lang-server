@@ -1,0 +1,2 @@
+(load "lang")
+(load "examples/hello-world/hello-world")

@@ -1,0 +1,4 @@
+#lang serve
+
+(define (handle method route headers body)
+  (response :body "Hello World"))

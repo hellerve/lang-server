@@ -1,0 +1,7 @@
+(load "lang")
+
+(if (eq? (length zepto:args) 1)
+  (load (car zepto:args))
+  (write "Usage: zepto-serve <path to the server file>"))
+
+(exit 0)

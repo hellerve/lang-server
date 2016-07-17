@@ -1,0 +1,13 @@
+(let ()
+  (define serve (parse "server.zp"))
+
+  (define postlude (parse "postlude.zp"))
+
+  (define (parse-prog str) "the () is a workaround to enable multiple statements"
+    (string:parse (++ "(" 
+                      (string:join (cdr (string:split str #\newline)) #\newline)
+                      ")")))
+  (define (server str)
+    (let ((program (parse-prog str)))
+      (++ serve program postlude)))
+  (zepto:implements-lang server "serve"))

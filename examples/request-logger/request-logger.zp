@@ -1,0 +1,8 @@
+#lang serve
+(define (handle method route headers body)
+  (begin
+    (write (++ "method: " method
+               "; route: " route
+               "; headers:" (->string headers)
+               "; body: " body))
+    (response)))
