@@ -3,13 +3,13 @@
 lang-server is a simple tool that leverages zepto #langs to
 build a simple framework for simple servers.
 
-# Installation
+## Installation
 
 ```
 zeps install hellerve/lang-server
 ```
 
-# Usage
+## Usage
 
 ```clojure
 #lang serve
@@ -27,6 +27,12 @@ zepto-serve my-server
 For a more or less complex example leveraging a few more
 possibilities, see the [example JSON server](https://github.com/hellerve/lang-server/blob/master/examples/serve-json/serve-json.zp)
 or the [badge generator](https://github.com/hellerve/lang-server/blob/master/examples/badges/badges.zp).
+
+## Known bugs
+
+The following bugs are known:
+* Sending a header that includes  `: ` (colon-space) anywhere that's not the key-value
+  delimiter will crash the server (yay!).
 
 <hr/>
 Have fun!
