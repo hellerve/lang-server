@@ -1,5 +1,5 @@
 #{:name "zepto-serve"
-  :version "0.0.4"
+  :version "0.0.5"
   :license "GPLv2"
   :entry-point "main.zp"
   :type :tool

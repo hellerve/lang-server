@@ -28,14 +28,26 @@
           #{}
           (string:split headers "\r\n")))
 
+(define (receive-all conn)
+  (let* ((req     (byte-vector->string (net:recv conn (make-small 1024))))
+         (headers (car (string:split req "\r\n\r\n")))
+         (hlen    (length headers))
+         (split   (string:split headers "\r\n"))
+         (headers (apply make-hash (cdr (map (lambda (x) (string:split x ": ")) split))))
+         (contl   (string->number (string:trim (get-from headers "Content-Length" "0")))))
+    (let loop ((req req))
+      (if (>= (length req) (+ contl hlen))
+        req
+        (loop (++ req (byte-vector->string (net:recv conn (make-small 1024)))))))))
+
 (define (serve)
    (begin
      (net:listen sock)
      (let* ((conn-data  (net:accept sock))
             (conn       (car conn-data))
-            (req        (net:recv conn (make-small 1000)))
-            (head+body  (string:split (byte-vector->string req) "\r\n\r\n"))
-            (lines      (string:split (byte-vector->string req) "\r\n"))
+            (req        (receive-all conn))
+            (head+body  (string:split req "\r\n\r\n"))
+            (lines      (string:split req "\r\n"))
             (first-line (car lines))
             (headers    (parse-headers (string:substitute (car head+body) first-line "")))
             (req        (string:join (cdr head+body) "\r\n"))
