@@ -17,7 +17,7 @@
   (make-hash :body body :code code :content-type content-type))
 
 (define (wrap code content-type data)
- (++ "HTTP/1.1 " (->string code) (return-codes code)
+ (++ "HTTP/1.1 " (->string code) " " (return-codes code)
      "\r\nContent-Length: " (->string (length data))
      "\r\nContent-Type: " content-type  "\r\nConnection: close\r\n\r\n"
      data "\r\n\r\n"))
@@ -42,7 +42,7 @@
         (loop (++ req (byte-vector->string (net:recv conn (make-small 1024)))))))))
 
 (define (failed? obj)
-  (string? obj))
+  (not (hash-map? obj)))
 
 (define (serve)
    (begin
