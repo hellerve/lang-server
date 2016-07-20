@@ -8,7 +8,8 @@
                        401 "Unauthorized"
                        403 "Permission Denied"
                        404 "Not Found"
-                       405 "Method Not Allowed"})
+                       405 "Method Not Allowed"
+                       500 "Internal Server Error"})
 
 (defkeywords (response) (:body         :default ""
                         :code         :default 200
@@ -40,6 +41,9 @@
         req
         (loop (++ req (byte-vector->string (net:recv conn (make-small 1024)))))))))
 
+(define (failed? obj)
+  (string? obj))
+
 (define (serve)
    (begin
      (net:listen sock)
@@ -54,10 +58,12 @@
             (split      (string:split first-line #\space))
             (method     (car split))
             (route      (cadr split))
-            (handled    (handle method route headers req)))
-       (net:send conn (string->byte-vector (wrap (get-from handled :code 200)
-                                                 (get-from handled :content-type "text/html")
-                                                 (get-from handled :body "")))))))
+            (handled    (catch-vm-error (list handle method route headers req))))
+      (if (failed? handled)
+        (net:send conn (string->byte-vector (wrap 500 "text/html" "")))
+        (net:send conn (string->byte-vector (wrap (get-from handled :code 200)
+                                                  (get-from handled :content-type "text/html")
+                                                  (get-from handled :body ""))))))))
 
 (define HOST "0.0.0.0")
 (define PORT 5000)
