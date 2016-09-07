@@ -10,7 +10,7 @@
 ; additional dependencies to the package.
 
 (define template-string
-  (read-contents (zepto:find-on-path "zepto-serve/examples/badges/template.svg")))
+  (read-contents (car (zepto:find-on-path "zepto-serve/examples/badges/template.svg"))))
 
 (defkeywords (template service status) (:color :default "090"
                                         :width :default "100"

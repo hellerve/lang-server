@@ -1,7 +1,7 @@
 (let ()
-  (define serve (parse (zepto:find-on-path "zepto-serve/server")))
+  (define serve (parse (car (zepto:find-on-path "zepto-serve/server"))))
 
-  (define postlude (parse (zepto:find-on-path "zepto-serve/postlude")))
+  (define postlude (parse (car (zepto:find-on-path "zepto-serve/postlude"))))
 
   (define (parse-prog str) "the () is a workaround to enable multiple statements"
     (string:parse (++ "(" 
