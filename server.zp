@@ -25,7 +25,8 @@
 (define (parse-headers headers)
   (reduce (lambda (acc elem)
             (let ((split (string:split elem ":")))
-              (hash:set acc (string:trim (car split)) (string:trim (cadr split)))))
+              (hash:set acc (string:trim (car split))
+                        (string:trim (string:join (cdr split) ":")))))
           #{}
           (string:split headers "\r\n")))
 
@@ -34,7 +35,7 @@
          (headers (car (string:split req "\r\n\r\n")))
          (hlen    (length headers))
          (split   (string:split headers "\r\n"))
-         (headers (apply make-hash (cdr (map (lambda (x) (string:split x ": ")) split))))
+         (headers (apply make-hash (cdr (map ($ (string:split % ": ")) split))))
          (contl   (string->number (string:trim (get-from headers "Content-Length" "0")))))
     (let loop ((req req))
       (if (>= (length req) (+ contl hlen))
